@@ -94,8 +94,8 @@ def get_language_tool_directory():
 
 def get_server_cmd(port: int=None, config: LanguageToolConfig=None) -> List[str]:
     java_path, jar_path = get_jar_info()
-    cmd = [java_path, '-cp', jar_path,
-            'org.languagetool.server.HTTPServer', '-Djava.awt.headless=true', '-Dapple.awt.UIElement=true']
+    cmd = [java_path, '-Djava.awt.headless=true', '-Dapple.awt.headless=true', '-Dapple.awt.UIElement=true', '-cp', jar_path,
+            'org.languagetool.server.HTTPServer']
 
     if port is not None:
         cmd +=  ['-p', str(port)]
