@@ -107,7 +107,7 @@ def get_server_cmd(port: int=None, config: LanguageToolConfig=None) -> List[str]
 
 
 def get_jar_info() -> Tuple[str, str]:
-    java_path = which('java')
+    java_path = os.environ.get('LTP_JAVA_PATH', which('java'))
     if not java_path:
         raise JavaError("can't find Java")
     dir_name = get_language_tool_directory()
