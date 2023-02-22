@@ -305,6 +305,8 @@ class LanguageTool:
 
     def _terminate_server(self):
         LanguageToolError_message = ''
+        if self._server is None:
+            return
         try:
             self._server.terminate()
         except OSError:
