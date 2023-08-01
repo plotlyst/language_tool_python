@@ -141,7 +141,6 @@ def download_lt():
         if os.path.isdir(path)
     ]
 
-    confirm_java_compatibility()
     version = LATEST_VERSION
     filename = FILENAME.format(version=version)
     language_tool_download_url = urljoin(BASE_URL, filename)
