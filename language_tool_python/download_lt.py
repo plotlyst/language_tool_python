@@ -10,9 +10,9 @@ import requests
 import subprocess
 import sys
 import os
-import tempfile
 import tqdm
-import zipfile 
+import zipfile
+import uuid
 
 from distutils.spawn import find_executable
 from urllib.parse import urljoin
@@ -99,17 +99,17 @@ def get_common_prefix(z):
 def http_get(url, out_file, proxies=None):
     """ Get contents of a URL and save to a file.
     """
-    req = requests.get(url, stream=True, proxies=proxies)
-    content_length = req.headers.get('Content-Length')
-    total = int(content_length) if content_length is not None else None
-    if req.status_code == 403: # Not found on AWS
-        raise Exception('Could not find at URL {}.'.format(url))
-    progress = tqdm.tqdm(unit="B", unit_scale=True, total=total, desc=f'Downloading LanguageTool {LATEST_VERSION}')
-    for chunk in req.iter_content(chunk_size=1024):
-        if chunk: # filter out keep-alive new chunks
-            progress.update(len(chunk))
-            out_file.write(chunk)
-    progress.close()
+    with requests.get(url, stream=True, proxies=proxies, timeout=10) as req:
+        req.raise_for_status()
+        content_length = req.headers.get('Content-Length')
+        total = int(content_length) if content_length is not None else None
+        progress = tqdm.tqdm(unit="B", unit_scale=True, total=total, desc=f'Downloading LanguageTool {LATEST_VERSION}')
+        with open(out_file, 'wb') as f:
+            for chunk in req.iter_content(chunk_size=8192):
+                    progress.update(len(chunk))
+                    f.write(chunk)
+    
+        progress.close()
 
 def unzip_file(temp_file, directory_to_extract_to):
     """ Unzips a .zip file to folder path. """
@@ -120,16 +120,12 @@ def unzip_file(temp_file, directory_to_extract_to):
 
 def download_zip(url, directory):
     """ Downloads and unzips zip file from `url` to `directory`. """
-    # Download file.
-    downloaded_file = tempfile.NamedTemporaryFile(suffix='.zip', delete=False)
+    downloaded_file = os.path.join(directory, f'{uuid.uuid4()}.zip')
     http_get(url, downloaded_file)
-    # Close the file so we can extract it.
-    downloaded_file.close() 
-    # Extract zip file to path.
+    
     unzip_file(downloaded_file, directory)
-    # Remove the temporary file.
     os.remove(downloaded_file.name)
-    # Tell the user the download path.
+    
     logger.info('Downloaded {} to {}.'.format(url, directory))
 
 def download_lt():
