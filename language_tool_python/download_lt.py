@@ -25,7 +25,7 @@ logger.setLevel(logging.INFO)
 
 
 # Get download host from environment or default.
-BASE_URL = os.environ.get('LTP_DOWNLOAD_HOST', 'https://www.languagetool.org/download/')
+BASE_URL = os.environ.get('LTP_DOWNLOAD_HOST', 'https://github.com/plotlyst/feed/releases/download/spellcheck/')
 FILENAME = 'LanguageTool-{version}.zip'
 
 LATEST_VERSION = '6.4'
