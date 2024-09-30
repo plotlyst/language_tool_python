@@ -10,7 +10,6 @@ import requests
 import subprocess
 import sys
 import os
-import tqdm
 import zipfile
 import uuid
 
@@ -97,19 +96,12 @@ def get_common_prefix(z):
     return None
 
 def http_get(url, out_file, proxies=None):
-    """ Get contents of a URL and save to a file.
-    """
+    """ Get contents of a URL and save to a file. """
     with requests.get(url, stream=True, proxies=proxies, timeout=10) as req:
         req.raise_for_status()
-        content_length = req.headers.get('Content-Length')
-        total = int(content_length) if content_length is not None else None
-        progress = tqdm.tqdm(unit="B", unit_scale=True, total=total, desc=f'Downloading LanguageTool {LATEST_VERSION}')
         with open(out_file, 'wb') as f:
             for chunk in req.iter_content(chunk_size=8192):
-                progress.update(len(chunk))
                 f.write(chunk)
-    
-        progress.close()
 
 def unzip_file(temp_file, directory_to_extract_to):
     """ Unzips a .zip file to folder path. """
