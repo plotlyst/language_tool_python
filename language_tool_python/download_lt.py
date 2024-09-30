@@ -106,15 +106,15 @@ def http_get(url, out_file, proxies=None):
         progress = tqdm.tqdm(unit="B", unit_scale=True, total=total, desc=f'Downloading LanguageTool {LATEST_VERSION}')
         with open(out_file, 'wb') as f:
             for chunk in req.iter_content(chunk_size=8192):
-                    progress.update(len(chunk))
-                    f.write(chunk)
+                progress.update(len(chunk))
+                f.write(chunk)
     
         progress.close()
 
 def unzip_file(temp_file, directory_to_extract_to):
     """ Unzips a .zip file to folder path. """
-    logger.info('Unzipping {} to {}.'.format(temp_file.name, directory_to_extract_to))
-    with zipfile.ZipFile(temp_file.name, 'r') as zip_ref:
+    logger.info('Unzipping {} to {}.'.format(temp_file, directory_to_extract_to))
+    with zipfile.ZipFile(temp_file, 'r') as zip_ref:
         zip_ref.extractall(directory_to_extract_to)
 
 
@@ -124,7 +124,7 @@ def download_zip(url, directory):
     http_get(url, downloaded_file)
     
     unzip_file(downloaded_file, directory)
-    os.remove(downloaded_file.name)
+    os.remove(downloaded_file)
     
     logger.info('Downloaded {} to {}.'.format(url, directory))
 
